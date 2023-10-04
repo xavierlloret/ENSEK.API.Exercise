@@ -11,9 +11,7 @@ namespace ENSEK.API.Exercise
     {        
         [TestMethod]
         public void TestRestClientWithValidToken()
-        {
-            var client = new RestClient();
-
+        {            
             var authToken = GetToken();
             var response = Requests.ResetTestData(authToken);
             Assert.AreEqual("Success", response);
@@ -21,11 +19,35 @@ namespace ENSEK.API.Exercise
         [TestMethod]
         public void TestRestClientWithInvalidToken()
         {
-            var client = new RestClient();
-
             var authToken = "Invalid_Test_Token";
             var response = Requests.ResetTestData(authToken);
             Assert.AreEqual("Unauthorized", response);
         }
+    }
+
+    [TestClass]
+    public class BuyFuelTests
+    {
+        [TestMethod]
+        public void BuyElectric()
+        {
+            var response = Requests.PUTBuyEnergyUnits(3,1);
+        }
+        [TestMethod]
+        public void BuyGas()
+        {            
+            var response = Requests.PUTBuyEnergyUnits(1, 1);
+        }
+        [TestMethod]
+        public void BuyNuclear()
+        {
+            var response = Requests.PUTBuyEnergyUnits(2, 1);
+        }
+        [TestMethod]
+        public void BuyOil()
+        {
+            var response = Requests.PUTBuyEnergyUnits(4, 1);
+        }
+
     }
 }

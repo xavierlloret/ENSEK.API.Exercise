@@ -89,7 +89,7 @@
     <Compile Include="GetAuthorizationToken.cs" />
     <Compile Include="Requests.cs" />
     <Compile Include="MyRestClient.cs" />
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="TestCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

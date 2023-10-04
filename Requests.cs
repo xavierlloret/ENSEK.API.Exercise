@@ -9,8 +9,6 @@ namespace ENSEK.API.Exercise
 {
     public class Requests
     {
-
-
         public static RestResponse GetEnergyTypes()
         {           
             var client = newRestClient();
@@ -29,6 +27,16 @@ namespace ENSEK.API.Exercise
             var client = newRestClient();
             var request = new RestRequest("/ENSEK/reset", Method.Post);
             request.AddHeader("Authorization", "Bearer " + AuthToken);
+
+            RestResponse response = client.Execute(request);
+            dynamic responseObj = Newtonsoft.Json.JsonConvert.DeserializeObject<JObject>(response.Content);
+            return responseObj.message;
+        }
+        public static string PUTBuyEnergyUnits(int id,int quantity)
+        {
+
+            var client = newRestClient();
+            var request = new RestRequest($"/ENSEK/buy/{id}/{quantity}", Method.Put);            
 
             RestResponse response = client.Execute(request);
             dynamic responseObj = Newtonsoft.Json.JsonConvert.DeserializeObject<JObject>(response.Content);
