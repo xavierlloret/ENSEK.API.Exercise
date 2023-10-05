@@ -2,6 +2,9 @@
 using static ENSEK.API.Exercise.GetAuthorizationToken;
 using RestSharp;
 using ENSEK.API.Exercise.Helpers;
+using System.Linq;
+using System;
+using System.Globalization;
 
 namespace ENSEK.API.Exercise
 {
@@ -79,5 +82,35 @@ namespace ENSEK.API.Exercise
             Assert.IsTrue(fuelMatch);
         }
 
+    }
+    [TestClass]
+    public class OrdersCreatedTests
+    {
+        [TestMethod]
+        public void TestRestClientWithValidToken()
+        {
+            var orders = Requests.GETorders();
+            DateTime muku = DateTime.Now;
+            DateTime currentDate = DateTime.Now;
+            string format = "ddd, dd MMM yyyy HH:mm:ss 'GMT'";
+            int ordersBeforeTodayCount = 0;
+            foreach (var item in orders)
+            {
+                DateTime orderTime;
+                bool parsedSuccessfully = DateTime.TryParseExact(item.time, format, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out orderTime);
+                if (parsedSuccessfully)
+                {
+                    if (orderTime < currentDate)
+                    {
+                        ordersBeforeTodayCount++;
+                    }
+                    else 
+                    {
+                        muku = orderTime;
+                    }
+                }
+            }
+            
+        }
     }
 }
