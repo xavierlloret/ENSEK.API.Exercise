@@ -11,15 +11,16 @@ namespace ENSEK.API.Exercise
 {
     public class Requests
     {
-        public static RestResponse Get_energy()
+        public static Energy Get_energy()
         {           
             var client = newRestClient();
             var request = new RestRequest("/ENSEK/energy", Method.Get);            
 
             RestResponse response = client.Execute(request);
             var content = response.Content;
-            
-            return response;
+
+            Energy energy = JsonConvert.DeserializeObject<Energy>(content);            
+            return energy;
         }
 
         public static string Post_Reset(string AuthToken)

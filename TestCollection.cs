@@ -163,4 +163,19 @@ namespace ENSEK.API.Exercise
             Assert.IsFalse(orderPresent,$"The order {orderToDelete} has not been deleted correctly.");
         }
     }
+    [TestClass]
+    public class GetEnergyTests
+    {
+        [TestMethod]
+        public void GetEnergyInfo()
+        {
+            Energy energyInfo = Requests.Get_energy();
+            //in this test all the values could be checked for inconsistencies but without a description of what
+            //to check for in each field there is not point.
+            Assert.IsTrue(energyInfo.gas.quantity_of_units >= 0);
+            Assert.IsTrue(energyInfo.electric.quantity_of_units >= 0);
+            Assert.IsTrue(energyInfo.nuclear.quantity_of_units >= 0);
+            Assert.IsTrue(energyInfo.oil.quantity_of_units >= 0);
+        }
+    }
 }
