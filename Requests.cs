@@ -11,15 +11,14 @@ namespace ENSEK.API.Exercise
 {
     public class Requests
     {
-        public static RestResponse GetEnergyTypes()
+        public static RestResponse Get_energy()
         {           
             var client = newRestClient();
             var request = new RestRequest("/ENSEK/energy", Method.Get);            
 
             RestResponse response = client.Execute(request);
             var content = response.Content;
-
-            //var requestResponseContent = JsonConvert.DeserializeObject<Json>(content);
+            
             return response;
         }
 
@@ -34,7 +33,7 @@ namespace ENSEK.API.Exercise
             dynamic responseObj = Newtonsoft.Json.JsonConvert.DeserializeObject<JObject>(response.Content);
             return responseObj.message;
         }
-        public static string PUT_buy(int id,int quantity)
+        public static string Put_buy(int id,int quantity)
         {
 
             var client = newRestClient();
@@ -45,7 +44,7 @@ namespace ENSEK.API.Exercise
             return responseObj.message;
         }
 
-        public static List<Order> GETorders()
+        public static List<Order> Get_Orders()
         {
             var client = newRestClient();
             var request = new RestRequest("/ENSEK/orders", Method.Get);
@@ -55,6 +54,30 @@ namespace ENSEK.API.Exercise
 
             List<Order> orders = JsonConvert.DeserializeObject<List<Order>>(content);                        
             return orders;
+        }
+        public static Order Get_Order(string orderId)
+        {
+            var client = newRestClient();
+            var request = new RestRequest($"/ENSEK/orders/{orderId}", Method.Get);
+
+            RestResponse response = client.Execute(request);
+            var content = response.Content;
+
+            Order order = JsonConvert.DeserializeObject<Order>(content);
+            return order;
+        }
+
+        public static Order Put_Order(string orderId,int quantity, int energy_id)
+        {
+            var client = newRestClient();
+            var request = new RestRequest($"/ENSEK/orders/{orderId}", Method.Put);
+            request.AddBody(new { id = orderId, quantity = quantity, energy_id = energy_id });
+
+            RestResponse response = client.Execute(request);
+            var content = response.Content;
+
+            Order order = JsonConvert.DeserializeObject<Order>(content);
+            return order;
         }
 
         public static string Delete_Orders(string orderId)

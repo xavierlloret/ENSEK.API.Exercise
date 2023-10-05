@@ -18,11 +18,11 @@ namespace ENSEK.API.Exercise.Helpers
 
             // Find the first match in the input string
             Match match = Regex.Match(message, pattern);
-                        
+
             if (match.Success)
-            {               
-                string guidString = match.Value;                
-                return(guidString);
+            {
+                string guidString = match.Value;
+                return (guidString);
             }
             else
             {
@@ -36,7 +36,7 @@ namespace ENSEK.API.Exercise.Helpers
             {
                 if (item.id == id)
                 {
-                    orderFound = item;                    
+                    orderFound = item;
                     break;
                 }
             }
@@ -45,7 +45,7 @@ namespace ENSEK.API.Exercise.Helpers
 
         public static bool FuelTypeMatch(int numericType, string orderType)
         {
-            bool typesMatch= false;
+            bool typesMatch = false;
             switch (numericType)
             {
                 case 1:
@@ -70,12 +70,30 @@ namespace ENSEK.API.Exercise.Helpers
                     if (orderType == "Oil")
                     {
                         return typesMatch = true;
-                    }                    
+                    }
                     break;
-                      
+
             }
             return typesMatch;
         }
+        public static string FuelIntToNameConvert(int numericType)
+        {
+            switch (numericType)
+            {
+                case 1:
+                    return "gas";
+                    break;
+                case 2:
+                    return "nuclear";
+                    break;
+                case 3:
+                    return "electric";
+                    break;
+                case 4:
+                    return "Oil";
+                    break;
+            }
+            return "Could not find a match";
+        }
     }
-    
 }

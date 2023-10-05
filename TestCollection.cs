@@ -36,9 +36,9 @@ namespace ENSEK.API.Exercise
         {
             int energyType = 3;
             int quantity = 1;
-            var response = Requests.PUT_buy(energyType, quantity);
+            var response = Requests.Put_buy(energyType, quantity);
             string id = Utilities.ExtractOrderId(response);
-            var orders = Requests.GETorders();
+            var orders = Requests.Get_Orders();
             Order orderPresent = Utilities.OrderSearch(id, orders);
             Assert.IsNotNull(orderPresent,$"Order with ID '{id}' found in the orders.");
             Assert.AreEqual(1, orderPresent.quantity);
@@ -50,9 +50,9 @@ namespace ENSEK.API.Exercise
         {
             int energyType = 1;
             int quantity = 1;
-            var response = Requests.PUT_buy(energyType, quantity);
+            var response = Requests.Put_buy(energyType, quantity);
             string id = Utilities.ExtractOrderId(response);
-            var orders = Requests.GETorders();
+            var orders = Requests.Get_Orders();
             Order orderPresent = Utilities.OrderSearch(id, orders);
             Assert.IsNotNull(orderPresent, $"Order with ID '{id}' found in the orders.");
             Assert.AreEqual(1, orderPresent.quantity);
@@ -65,7 +65,7 @@ namespace ENSEK.API.Exercise
         {
             int energyType = 2;
             int quantity = 1;
-            var response = Requests.PUT_buy(energyType, quantity);
+            var response = Requests.Put_buy(energyType, quantity);
             Assert.AreEqual("There is no nuclear fuel to purchase!", response);
         }
         [TestMethod]
@@ -73,8 +73,8 @@ namespace ENSEK.API.Exercise
         {
             int energyType = 4;
             int quantity = 1;
-            var response = Requests.PUT_buy(energyType, quantity);
-            var orders = Requests.GETorders();
+            var response = Requests.Put_buy(energyType, quantity);
+            var orders = Requests.Get_Orders();
             string id = Utilities.ExtractOrderId(response);
             Order orderPresent = Utilities.OrderSearch(id, orders);
             Assert.IsNotNull(orderPresent, $"Order with ID '{id}' found in the orders.");
@@ -85,13 +85,13 @@ namespace ENSEK.API.Exercise
 
     }
     [TestClass]
-    public class OrdersCountTests
+    public class OrdersTests
     {
         [TestMethod]
         public void TestOrderCountAfterReset()
         {
             Requests.Post_Reset(GetToken());
-            var orders = Requests.GETorders();            
+            var orders = Requests.Get_Orders();            
             DateTime currentDate = DateTime.Now;
             string format = "ddd, dd MMM yyyy HH:mm:ss 'GMT'";
             int ordersBeforeTodayCount = 0;
@@ -117,6 +117,36 @@ namespace ENSEK.API.Exercise
             Assert.AreEqual (expectedOrderCount, ordersBeforeTodayCount,$"There is a missmatch between the expected and the actual number of valid orders.{parseErrors}");   
             
         }
+
+        [TestMethod]
+        public void GetSingleOrder()
+        {
+            Requests.Post_Reset(GetToken());
+            var orders = Requests.Get_Orders();            
+            string singleOrderToGet = orders[orders.Count-1].id;
+            Order retrievedOrder =  Requests.Get_Order(singleOrderToGet);
+            Assert.AreEqual(singleOrderToGet, retrievedOrder.id,"The order retrieved does not match the id requested.");  
+        }
+
+        [TestMethod]
+        public void UpdateAnOrder()
+        {
+            Requests.Post_Reset(GetToken());
+            var orders = Requests.Get_Orders();
+
+            Order orderdToUpdate = orders[0];
+            string orderId = orderdToUpdate.id;
+            int newOrderQuantity = 5;
+            int newOrderEnergyId = 2;
+            Order updatedOrder = Requests.Put_Order(orderId, newOrderQuantity, newOrderEnergyId);
+            
+            string newOrderEnergyName = Utilities.FuelIntToNameConvert(2);
+            Assert.AreEqual(newOrderQuantity, updatedOrder.quantity,"Quantity was not updated correctly.");
+            Assert.AreEqual(newOrderEnergyName, updatedOrder.fuel, "Energy was not updated correctly.");
+            Assert.IsNotNull(updatedOrder.time,"Time value was not updated correctly");
+
+            //Assert.AreEqual(singleOrderToGet, retrievedOrder.id, "The order retrieved does not match the id requested.");
+        }
     }
     [TestClass]
     public class DeleteOrdersTests
@@ -125,7 +155,7 @@ namespace ENSEK.API.Exercise
         public void DeleteOrder()
         {
             Requests.Post_Reset(GetToken());
-            var orders = Requests.GETorders();
+            var orders = Requests.Get_Orders();
             string orderToDelete = orders[0].id;
             Requests.Delete_Orders(orderToDelete);
 
