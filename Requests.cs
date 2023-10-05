@@ -11,6 +11,21 @@ namespace ENSEK.API.Exercise
 {
     public class Requests
     {
+        public static Token Post_login(string username, string password)
+        {           
+
+            var client = newRestClient();
+
+            var request = new RestRequest("/ENSEK/login", Method.Post);
+            request.AddBody(new { username = username, password = password });
+            RestResponse response = client.Execute(request);
+            var content = response.Content;
+
+            Token loginResponse = JsonConvert.DeserializeObject<Token>(content);
+
+            return loginResponse;
+        }
+
         public static Energy Get_energy()
         {           
             var client = newRestClient();
@@ -90,5 +105,6 @@ namespace ENSEK.API.Exercise
             dynamic responseObj = Newtonsoft.Json.JsonConvert.DeserializeObject<JObject>(response.Content);
             return responseObj.message;
         }
+
     }
 }

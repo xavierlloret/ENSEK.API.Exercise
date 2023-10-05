@@ -177,5 +177,39 @@ namespace ENSEK.API.Exercise
             Assert.IsTrue(energyInfo.nuclear.quantity_of_units >= 0);
             Assert.IsTrue(energyInfo.oil.quantity_of_units >= 0);
         }
+
+        [TestClass]
+        public class LoginTests
+        {
+            [TestMethod]
+            public void LogInWithValidCredentials()
+            {
+                string username = "test";
+                string password = "testing";
+
+                Token loginResponse = Requests.Post_login(username, password);
+                Assert.AreEqual("Success", loginResponse.message);
+                
+            }
+            [TestMethod]
+            public void LogInWithInvalidUser()
+            {
+                string username = "invalidtest";
+                string password = "testing";
+
+                Token loginResponse = Requests.Post_login(username, password);
+                Assert.AreEqual("Unauthorized", loginResponse.message);
+
+            }
+            [TestMethod]
+            public void LogInWithInvalidPassword()
+            {
+                string username = "test";
+                string password = "invalidtesting";
+
+                Token loginResponse = Requests.Post_login(username, password);
+                Assert.AreEqual("Unauthorized", loginResponse.message);
+            }
+        }
     }
 }

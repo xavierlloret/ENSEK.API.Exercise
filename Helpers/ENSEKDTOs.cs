@@ -53,5 +53,10 @@ namespace ENSEK.API.Exercise.Helpers
         public Oil oil { get; set; }
     }
 
+    public class Token
+    {
+        public string access_token { get; set; }
+        public string message { get; set; }
+    }
 
 }

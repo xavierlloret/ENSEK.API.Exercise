@@ -18,10 +18,8 @@ namespace ENSEK.API.Exercise
 
             var request = new RestRequest("/ENSEK/login", Method.Post);
             request.AddBody(new { username = username, password = password });
-            
-
             RestResponse response = client.Execute(request);
-            //return response.Content;
+            
             if (!response.IsSuccessful)
             {
                 Console.WriteLine("Authorization token request failed with the following error: @{Error}", response.Content);
