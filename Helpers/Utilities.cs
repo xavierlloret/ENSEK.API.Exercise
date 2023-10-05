@@ -61,7 +61,7 @@ namespace ENSEK.API.Exercise.Helpers
                     }
                     break;
                 case 3:
-                    if (orderType == "Elec")
+                    if (orderType == "electric")
                     {
                         return typesMatch = true;
                     }

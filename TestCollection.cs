@@ -5,6 +5,7 @@ using ENSEK.API.Exercise.Helpers;
 using System.Linq;
 using System;
 using System.Globalization;
+using System.Web;
 
 namespace ENSEK.API.Exercise
 {
@@ -12,17 +13,17 @@ namespace ENSEK.API.Exercise
     public class RestClientTests
     {        
         [TestMethod]
-        public void TestRestClientWithValidToken()
+        public void TestPost_ResetWithValidToken()
         {            
             var authToken = GetToken();
-            var response = Requests.ResetTestData(authToken);
+            var response = Requests.Post_Reset(authToken);
             Assert.AreEqual("Success", response);
         }
         [TestMethod]
-        public void TestRestClientWithInvalidToken()
+        public void TestPost_ResetWithInvalidToken()
         {
             var authToken = "Invalid_Test_Token";
-            var response = Requests.ResetTestData(authToken);
+            var response = Requests.Post_Reset(authToken);
             Assert.AreEqual("Unauthorized", response);
         }
     }
@@ -35,28 +36,28 @@ namespace ENSEK.API.Exercise
         {
             int energyType = 3;
             int quantity = 1;
-            var response = Requests.PUTBuyEnergyUnits(energyType, quantity);
+            var response = Requests.PUT_buy(energyType, quantity);
             string id = Utilities.ExtractOrderId(response);
             var orders = Requests.GETorders();
             Order orderPresent = Utilities.OrderSearch(id, orders);
             Assert.IsNotNull(orderPresent,$"Order with ID '{id}' found in the orders.");
             Assert.AreEqual(1, orderPresent.quantity);
             bool fuelMatch = Utilities.FuelTypeMatch(energyType, orderPresent.fuel);
-            Assert.IsTrue(fuelMatch);
+            Assert.IsTrue(fuelMatch,"The fuel type does not match the expected value.");
         }
         [TestMethod]
         public void BuyGas()
         {
             int energyType = 1;
             int quantity = 1;
-            var response = Requests.PUTBuyEnergyUnits(energyType, quantity);
+            var response = Requests.PUT_buy(energyType, quantity);
             string id = Utilities.ExtractOrderId(response);
             var orders = Requests.GETorders();
             Order orderPresent = Utilities.OrderSearch(id, orders);
             Assert.IsNotNull(orderPresent, $"Order with ID '{id}' found in the orders.");
             Assert.AreEqual(1, orderPresent.quantity);
             bool fuelMatch = Utilities.FuelTypeMatch(energyType, orderPresent.fuel);
-            Assert.IsTrue(fuelMatch);
+            Assert.IsTrue(fuelMatch, "The fuel type does not match the expected value.");
 
         }
         [TestMethod]
@@ -64,7 +65,7 @@ namespace ENSEK.API.Exercise
         {
             int energyType = 2;
             int quantity = 1;
-            var response = Requests.PUTBuyEnergyUnits(energyType, quantity);
+            var response = Requests.PUT_buy(energyType, quantity);
             Assert.AreEqual("There is no nuclear fuel to purchase!", response);
         }
         [TestMethod]
@@ -72,30 +73,32 @@ namespace ENSEK.API.Exercise
         {
             int energyType = 4;
             int quantity = 1;
-            var response = Requests.PUTBuyEnergyUnits(energyType, quantity);
+            var response = Requests.PUT_buy(energyType, quantity);
             var orders = Requests.GETorders();
             string id = Utilities.ExtractOrderId(response);
             Order orderPresent = Utilities.OrderSearch(id, orders);
             Assert.IsNotNull(orderPresent, $"Order with ID '{id}' found in the orders.");
             Assert.AreEqual(1, orderPresent.quantity);
             bool fuelMatch = Utilities.FuelTypeMatch(energyType, orderPresent.fuel);
-            Assert.IsTrue(fuelMatch);
+            Assert.IsTrue(fuelMatch, "The fuel type does not match the expected value.");
         }
 
     }
     [TestClass]
-    public class OrdersCreatedTests
+    public class OrdersCountTests
     {
         [TestMethod]
-        public void TestRestClientWithValidToken()
+        public void TestOrderCountAfterReset()
         {
-            var orders = Requests.GETorders();
-            DateTime muku = DateTime.Now;
+            Requests.Post_Reset(GetToken());
+            var orders = Requests.GETorders();            
             DateTime currentDate = DateTime.Now;
             string format = "ddd, dd MMM yyyy HH:mm:ss 'GMT'";
             int ordersBeforeTodayCount = 0;
+            string parseErrors = null;
             foreach (var item in orders)
             {
+
                 DateTime orderTime;
                 bool parsedSuccessfully = DateTime.TryParseExact(item.time, format, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out orderTime);
                 if (parsedSuccessfully)
@@ -103,14 +106,31 @@ namespace ENSEK.API.Exercise
                     if (orderTime < currentDate)
                     {
                         ordersBeforeTodayCount++;
-                    }
-                    else 
-                    {
-                        muku = orderTime;
-                    }
+                    }                   
+                }
+                else 
+                {
+                    parseErrors = " Some order times could not be parsed.";
                 }
             }
+            int expectedOrderCount = 5;
+            Assert.AreEqual (expectedOrderCount, ordersBeforeTodayCount,$"There is a missmatch between the expected and the actual number of valid orders.{parseErrors}");   
             
+        }
+    }
+    [TestClass]
+    public class DeleteOrdersTests
+    {
+        [TestMethod]
+        public void DeleteOrder()
+        {
+            Requests.Post_Reset(GetToken());
+            var orders = Requests.GETorders();
+            string orderToDelete = orders[0].id;
+            Requests.Delete_Orders(orderToDelete);
+
+            bool orderPresent = orders.Any(item => item.id == orderToDelete);            
+            Assert.IsFalse(orderPresent,$"The order {orderToDelete} has not been deleted correctly.");
         }
     }
 }

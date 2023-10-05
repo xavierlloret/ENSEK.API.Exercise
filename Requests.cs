@@ -23,7 +23,7 @@ namespace ENSEK.API.Exercise
             return response;
         }
 
-        public static string ResetTestData(string AuthToken)
+        public static string Post_Reset(string AuthToken)
         {
             
             var client = newRestClient();
@@ -34,7 +34,7 @@ namespace ENSEK.API.Exercise
             dynamic responseObj = Newtonsoft.Json.JsonConvert.DeserializeObject<JObject>(response.Content);
             return responseObj.message;
         }
-        public static string PUTBuyEnergyUnits(int id,int quantity)
+        public static string PUT_buy(int id,int quantity)
         {
 
             var client = newRestClient();
@@ -55,6 +55,16 @@ namespace ENSEK.API.Exercise
 
             List<Order> orders = JsonConvert.DeserializeObject<List<Order>>(content);                        
             return orders;
+        }
+
+        public static string Delete_Orders(string orderId)
+        {
+            var client = newRestClient();
+            var request = new RestRequest($"/ENSEK/orders/{orderId}", Method.Delete);            
+
+            RestResponse response = client.Execute(request);
+            dynamic responseObj = Newtonsoft.Json.JsonConvert.DeserializeObject<JObject>(response.Content);
+            return responseObj.message;
         }
     }
 }
